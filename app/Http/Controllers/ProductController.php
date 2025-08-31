@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Http\Resources\ProductResource;
 use App\Models\Product;
 
 class ProductController extends Controller
@@ -15,7 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         return view('pages.products.index', [
-            'products' => ProductResource::collection(Product::all())->resolve(),
+            'products' => Product::all(),
             'product_count' => Product::count(),
         ]);
     }

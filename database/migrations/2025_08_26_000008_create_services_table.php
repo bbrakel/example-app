@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -10,22 +9,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table): void {
+        Schema::create('services', function (Blueprint $table) {
             $table->id();
 
             $table->foreignIdFor(User::class);
 
-            $table->integer('quantity');
-            $table->integer('price');
-
-            $table->foreignIdFor(Product::class);
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->integer('price')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('services');
     }
 };

@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
  * @property int $user_id
  * @property \Illuminate\Support\Carbon $start_at
  * @property \Illuminate\Support\Carbon $end_at
- * @property \Illuminate\Support\Carbon|null $idle_time
+ * @property \Illuminate\Support\Carbon|null $idle
  * @property int|null $price
  * @property int $invoice_id
  * @property int $service_id
@@ -39,29 +40,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Labor extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'invoice_id',
         'service_id',
         'start_at',
         'end_at',
-        'idle_time',
+        'idle',
     ];
 
     protected $casts = [
         'start_at' => 'datetime',
         'end_at' => 'datetime',
-        'idle_time' => 'datetime:H:i',
+        'idle' => 'datetime:H:i',
     ];
 
-    public function invoice(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(User::class);
     }
 
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(Invoice::class);
     }
 }

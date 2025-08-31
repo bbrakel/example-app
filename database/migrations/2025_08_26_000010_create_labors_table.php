@@ -15,15 +15,17 @@ return new class extends Migration
             $table->id();
 
             $table->foreignIdFor(User::class);
-            $table->dateTime('start_at');
-            $table->dateTime('end_at');
-            $table->time('idle_time')->nullable();
+            $table->foreignIdFor(Service::class);
+            $table->foreignIdFor(Invoice::class)->nullable();
+
+            $table->time('idle')->nullable();
             $table->integer('price')->nullable();
 
-            $table->foreignIdFor(Invoice::class);
-            $table->foreignIdFor(Service::class);
+            $table->timestamp('end_at');
+            $table->timestamp('start_at');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

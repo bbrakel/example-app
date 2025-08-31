@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use App\Casts\AsDiffForHumans;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Number;
 
 /**
  * @property int $id
@@ -46,7 +51,7 @@ use Illuminate\Support\Carbon;
  */
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'date',
         'due_at',
@@ -55,59 +60,150 @@ class Invoice extends Model
         'serial',
     ];
 
-    public function services(): BelongsToMany
+    protected $appends = [
+        'price',
+        'vat',
+        'status',
+    ];
+
+    public function contact(): BelongsTo
     {
-        return $this->belongsToMany(Service::class, Labor::class)->withPivot([
-            'start_at',
-            'end_at',
-            'idle_time',
-            'price',
-            'created_at',
-            'updated_at',
-        ]);
+        return $this->belongsTo(
+            Contact::class
+        );
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(
+            User::class
+        );
     }
 
-    public function scopeDraft($query)
+    public function labors(): HasMany
     {
-        return $query->whereNull('invoices.sent_at')->whereNull('invoices.paid_at');
+        return $this->hasMany(
+            Labor::class
+        );
     }
 
-    public function scopeUnpaid($query)
+    public function stocks(): HasMany
     {
-        return $query->whereNull('invoices.paid_at');
+        return $this->hasMany(
+            Stock::class
+        );
     }
 
-    public function scopePaid($query)
+    public function products(): BelongsToMany
     {
-        return $query->whereNotNull('invoices.paid_at');
+        return $this->belongsToMany(
+            Product::class,
+            Stock::class
+        );
     }
 
-    public function contact(): BelongsTo
+    public function services(): BelongsToMany
     {
-        return $this->belongsTo(Contact::class);
+        return $this->belongsToMany(
+            Service::class,
+            Labor::class,
+        );
+    }
+
+    public function scopeDraft(Builder $query): Builder
+    {
+        return $query
+            ->with(['services', 'products'])
+            ->whereNull('sent_at')
+            ->whereNull('paid_at')
+            ->withCasts([
+                'date' => 'datetime:d-m-Y',
+                'due_at' => AsDiffForHumans::class,
+            ]);
+    }
+
+    public function scopeDue(Builder $query): Builder
+    {
+        return $query
+            ->with(['services', 'products'])
+            ->whereNotNull('sent_at')
+            ->whereNull('paid_at')
+            ->where('due_at', '>=', now())
+            ->withCasts([
+                'date' => 'datetime:d-m-Y',
+                'due_at' => AsDiffForHumans::class,
+            ]);
+
+    }
+
+    public function scopeOverdue(Builder $query): Builder
+    {
+        return $query
+            ->with(['services', 'products'])
+            ->whereNotNull('sent_at')
+            ->whereNull('paid_at')
+            ->where('due_at', '<', now())
+            ->withCasts([
+                'date' => 'datetime:d-m-Y',
+                'due_at' => AsDiffForHumans::class,
+            ]);
+
+    }
+
+    public function scopePaid(Builder $query): Builder
+    {
+        return $query
+            ->with(['services', 'products'])
+            ->whereNotNull('paid_at')
+            ->withCasts([
+                'date' => 'datetime:d-m-Y',
+                'due_at' => AsDiffForHumans::class,
+            ]);
+
     }
 
     protected function casts(): array
     {
         return [
-            'date' => 'datetime',
+            'date' => 'datetime:Y-m-d',
             'due_at' => 'datetime',
             'paid_at' => 'datetime',
             'sent_at' => 'datetime',
         ];
     }
 
-    // protected function serial(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn(mixed $value): ?string => $value ? str_pad((string) $value, 6, '0', STR_PAD_LEFT) : null,
-    //     );
-    // }
+    protected function serial(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value): ?string => $value ? str_pad((string) $value, 6, '0', STR_PAD_LEFT) : null,
+        );
+    }
+
+    protected function price(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): ?string => Number::currency(
+                $this->services->sum(
+                    fn ($service): mixed => ($service->pivot->price ?? $service->price) / 100
+                ),
+                'EUR',
+                app()->getLocale()
+            )
+        );
+    }
+
+    protected function vat(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): ?string => Number::currency(
+                $this->services->sum(
+                    fn ($service): mixed => ($service->pivot->price ?? $service->price) / 100 * 0.21
+                ),
+                'EUR',
+                app()->getLocale()
+            ),
+        );
+    }
 
     protected function status(): Attribute
     {

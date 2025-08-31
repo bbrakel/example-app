@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Invoice;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -9,21 +11,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table): void {
+        Schema::create('stocks', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Product::class);
+            $table->foreignIdFor(Invoice::class)->nullable();
 
-            $table->string('name');
+            $table->integer('quantity');
             $table->integer('price');
-            $table->string('brand');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('stocks');
     }
 };

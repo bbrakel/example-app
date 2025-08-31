@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -33,8 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Service extends Model
 {
-    /** @use HasFactory<\Database\Factories\ServiceFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -42,16 +42,8 @@ class Service extends Model
         'description',
     ];
 
-    protected $casts = [
-        'price' => 'integer',
-    ];
-
-    public function invoices(): BelongsToMany
+    public function user(): BelongsTo
     {
-        return $this->belongsToMany(Invoice::class, Labor::class)->withPivot([
-            'start_at',
-            'end_at',
-            'idle_time',
-        ]);
+        return $this->belongsTo(User::class);
     }
 }

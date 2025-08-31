@@ -9,21 +9,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table): void {
             $table->id();
 
             $table->foreignIdFor(User::class);
 
             $table->string('name');
-            $table->string('description')->nullable();
-            $table->integer('price')->nullable();
+            $table->string('barcode');
+            $table->integer('price');
+            $table->string('brand');
+            $table->string('sku');
+            $table->integer('quantity');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('products');
     }
 };

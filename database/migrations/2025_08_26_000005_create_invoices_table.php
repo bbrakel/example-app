@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,16 +14,19 @@ return new class extends Migration
             $table->id();
 
             $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Contact::class);
+
+            $table->date('date');
 
             $table->integer('serial');
             $table->unique(['serial', 'user_id']);
-            $table->date('date');
 
             $table->timestamp('due_at');
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('sent_at')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

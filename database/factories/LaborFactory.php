@@ -21,12 +21,14 @@ class LaborFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'invoice_id' => Invoice::factory(),
             'service_id' => Service::factory(),
-            'start_at' => $this->faker->dateTime(),
+            'invoice_id' => Invoice::factory(),
+
+            'idle' => $this->faker->optional()->time(),
+            'price' => $this->faker->optional()->numberBetween(10, 1000),
+
             'end_at' => $this->faker->dateTime(),
-            'idle_time' => $this->faker->time(),
-            'price' => $this->faker->numberBetween(10, 1000),
+            'start_at' => $this->faker->dateTime(),
         ];
     }
 }

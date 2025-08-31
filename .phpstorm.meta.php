@@ -2532,7 +2532,7 @@ namespace PHPSTORM_META {
 'validation.size.string','validation.starts_with','validation.string','validation.timezone','validation.unique',
 'validation.uploaded','validation.uppercase','validation.url','validation.ulid','validation.uuid',
 'validation.custom.attribute-name.rule-name','validation.attributes.amount','validation.attributes.brand','validation.attributes.date','validation.attributes.description',
-'validation.attributes.due_at','validation.attributes.end_at','validation.attributes.idle_time','validation.attributes.invoice_id','validation.attributes.name',
+'validation.attributes.due_at','validation.attributes.end_at','validation.attributes.idle','validation.attributes.invoice_id','validation.attributes.name',
 'validation.attributes.paid_at','validation.attributes.price','validation.attributes.quantity','validation.attributes.sent_at','validation.attributes.serial',
 'validation.attributes.service_id','validation.attributes.services','validation.attributes.start_at','validation.attributes.total','validation.attributes.user_id',
 'validation.attributes.vat','validation.attributes.status','validation.actions.index','validation.actions.create','validation.actions.store',
@@ -2549,7 +2549,7 @@ namespace PHPSTORM_META {
 'MEMCACHED_HOST','REDIS_CLIENT','REDIS_HOST','REDIS_PASSWORD','REDIS_PORT',
 'MAIL_MAILER','MAIL_SCHEME','MAIL_HOST','MAIL_PORT','MAIL_USERNAME',
 'MAIL_PASSWORD','MAIL_FROM_ADDRESS','MAIL_FROM_NAME','AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY',
-'AWS_DEFAULT_REGION','AWS_BUCKET','AWS_USE_PATH_STYLE_ENDPOINT','VITE_APP_NAME',);
+'AWS_DEFAULT_REGION','AWS_BUCKET','AWS_USE_PATH_STYLE_ENDPOINT','VITE_APP_NAME','DUSK_HEADLESS_DISABLED',);
         
                 expectedArguments(\Illuminate\Support\Facades\Gate::has(), 0, argumentsSet('auth'));
     expectedArguments(\Illuminate\Support\Facades\Gate::allows(), 0, argumentsSet('auth'));

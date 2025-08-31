@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
-use App\Http\Resources\ServiceResource;
 use App\Models\Service;
 
 class ServiceController extends Controller
@@ -15,7 +14,7 @@ class ServiceController extends Controller
     public function index()
     {
         return view('pages.services.index', [
-            'services' => ServiceResource::collection(Service::all())->resolve(),
+            'services' => Service::all(),
             'service_count' => Service::count(),
         ]);
     }

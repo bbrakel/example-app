@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDashboardRequest;
 use App\Http\Requests\UpdateDashboardRequest;
-use App\Http\Resources\InvoiceResource;
-use App\Http\Resources\StockResource;
 use App\Models\Dashboard;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -20,21 +18,14 @@ class DashboardController extends Controller
      */
     public function index(Request $request): View
     {
+        $draftInvoices = Invoice::query()->draft()->get();
+        $overdueInvoices = Invoice::query()->overdue()->get();
+        $stocks = Stock::query()->available()->get();
+
         return view('pages.dashboards.show', [
-            'draft_invoices' => InvoiceResource::collection(
-                Invoice::query()->with('services')->draft()->get()
-            )->resolve(),
-            'paid_invoices' => InvoiceResource::collection(
-                Invoice::query()->with('services')->paid()->get()
-            )->resolve(),
-            'unpaid_invoices' => InvoiceResource::collection(
-                Invoice::query()->with('services')->unpaid()->get()
-            )->resolve(),
-            'stocks' => StockResource::collection(
-                Stock::query()
-                    ->with(['product'])
-                    ->get()
-            )->resolve(),
+            'draft_invoices' => $draftInvoices->toArray(),
+            'overdue_invoices' => $overdueInvoices->toArray(),
+            'stocks' => $stocks->toArray(),
         ]);
     }
 

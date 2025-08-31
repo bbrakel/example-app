@@ -1,6 +1,12 @@
 <?php
 
 return [
-    'title' => 'Invoices',
+    'title' => 'invoices',
     'description' => ':count invoices found',
+    'status' => [
+        'draft' => 'Draft',
+        'due' => 'Due',
+        'overdue' => 'Overdue',
+        'paid' => 'Paid',
+    ],
 ];

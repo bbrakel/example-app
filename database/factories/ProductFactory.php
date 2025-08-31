@@ -21,8 +21,11 @@ class ProductFactory extends Factory
             'user_id' => User::factory(),
 
             'name' => $this->faker->word(),
-            'price' => $this->faker->numberBetween(1, 1000),
+            'price' => $this->faker->numberBetween(100, 10000),
             'brand' => $this->faker->company(),
+            'sku' => $this->faker->unique()->numerify('####-####'),
+            'quantity' => $this->faker->numberBetween(1, 100),
+            'barcode' => $this->faker->unique()->numerify('#########'),
         ];
     }
 }

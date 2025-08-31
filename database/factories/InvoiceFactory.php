@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,11 +20,12 @@ class InvoiceFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'serial' => $this->faker->unique()->numberBetween(1000, 9999),
+            'contact_id' => Contact::factory(),
             'date' => $this->faker->date(),
-            'due_at' => $this->faker->date(),
-            'paid_at' => $this->faker->dateTime(),
-            'sent_at' => $this->faker->dateTime(),
+            'serial' => $this->faker->unique()->numberBetween(1000, 9999),
+            'due_at' => $this->faker->dateTime(),
+            'paid_at' => $this->faker->optional()->dateTime(),
+            'sent_at' => $this->faker->optional()->dateTime(),
         ];
     }
 }

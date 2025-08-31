@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Casts\AsDiffForHumans;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
-use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 
 class InvoiceController extends Controller
@@ -14,13 +14,16 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $query = Invoice::query()
-            ->with('services');
+        $invoices = Invoice::query()
+            ->with('services')
+            ->withCasts([
+                'date' => 'datetime:d-m-Y',
+                'due_at' => AsDiffForHumans::class,
+            ])
+            ->get();
 
         return view('pages.invoices.index', [
-            'draft_invoices' => InvoiceResource::collection((clone $query)->draft()->get())->resolve(),
-            'paid_invoices' => InvoiceResource::collection((clone $query)->paid()->get())->resolve(),
-            'unpaid_invoices' => InvoiceResource::collection((clone $query)->unpaid()->whereNotNull('sent_at')->get())->resolve(),
+            'invoices' => $invoices->toArray(),
             'invoice_count' => Invoice::count(),
         ]);
     }
