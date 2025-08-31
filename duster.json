@@ -1,0 +1,15 @@
+{
+    "scripts": {
+        "lint": {
+            "PHPStan": [
+                "vendor\\bin\\phpstan",
+                "analyse",
+                "app\\",
+                "--memory-limit=2G"
+            ],
+            "PHPUnit": [
+                "vendor\\bin\\phpunit"
+            ]
+        }
+    }
+}
